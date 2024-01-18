@@ -49,6 +49,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+app.get("/", console.log("Server Running"));
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
 
