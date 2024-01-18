@@ -49,7 +49,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-app.get("/", () => console.log("Server is up and running"));
+app.get("/", (req, res) => res.json("ok"));
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
 
