@@ -3,11 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
 import bodyParser from "body-parser";
-import path from "path";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
-
 import authRouter from "./routes/authRoutes.js";
 import postRouter from "./routes/postRoutes.js";
 
@@ -17,16 +15,7 @@ const PORT = process.env.PORT || 8800;
 
 const app = express();
 
-const mongooseOptions = {
-  maxPoolSize: 10,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  family: 4,
-};
-
-console.log(process.env.DATABASE_URL);
-
-mongoose.connect(process.env.DATABASE_URL, mongooseOptions).then(
+mongoose.connect(process.env.DATABASE_URL).then(
   () => {
     console.log("Connected to MongoDB");
   },
