@@ -2,6 +2,7 @@ import Users from "../models/User.js";
 import { generateTokenForUser } from "../utils/auth.js";
 import bcrypt from "bcrypt";
 import { sendEmail } from "../utils/sendOTP.js";
+import OTP from "../models/OTP.js";
 
 export const register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body;
@@ -78,8 +79,30 @@ export const resetPassword = async (req, res) => {
         msg: "EmailId is not registered yet",
       });
     }
-    await sendEmail();
-    res.json("ok");
+    await sendEmail(email);
+
+    return res.status(201).json({ err: false, msg: "OTP Send successfully." });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const verifyOTP = async (req, res) => {
+  const { otp, email } = req.body;
+
+  try {
+    const otpModel = await OTP.findOne({ otp });
+
+    if (!otpModel && email !== otpModel?.email) {
+      return res.status(401).json({ err: true, msg: "Invalid OTP" });
+    }
+
+    await OTP.deleteOne({ otp });
+
+    return res
+      .status(201)
+      .json({ err: false, msg: "OTP verified successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
