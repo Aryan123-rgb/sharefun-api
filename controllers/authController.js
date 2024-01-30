@@ -76,7 +76,7 @@ export const resetPassword = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         err: true,
-        msg: "EmailId is not registered yet",
+        msg: "Email Id is not registered yet",
       });
     }
     await sendEmail(email);
@@ -103,6 +103,30 @@ export const verifyOTP = async (req, res) => {
     return res
       .status(201)
       .json({ err: false, msg: "OTP verified successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await Users.findOneAndUpdate(
+      { email },
+      { $set: { password: hashedPassword } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ err: true, msg: "User not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ err: false, msg: "Password changed successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
