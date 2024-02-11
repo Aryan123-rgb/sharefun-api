@@ -6,8 +6,11 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
+
+/* ROUTES */
 import authRouter from "./routes/authRoutes.js";
 import postRouter from "./routes/postRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -41,6 +44,7 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => res.json("ok"));
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
+app.use("/users",userRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
