@@ -48,16 +48,47 @@ export const sendFriendRequest = async (req, res) => {
   const { loggedInUserId, targetUserId } = req.body;
 
   try {
-    // Find the logged-in user and update the friendRequest field
-    const updatedUser = await Users.findOneAndUpdate(
+    // Find the target user and update the friendRequest field
+    const targetUser = await Users.findOneAndUpdate(
+      { _id: targetUserId },
+      { $addToSet: { friendRequest: loggedInUserId } },
+      { new: true }
+    );
+
+    // Find the logged in user and update the friendRequest field
+    const loggedInUser = await Users.findOneAndUpdate(
       { _id: loggedInUserId },
-      { $addToSet: { friendRequest: targetUserId } },
+      { $addToSet: { friends: targetUserId } },
       { new: true }
     );
 
     res.status(200).json({
       err: false,
       msg: "Friend request sent successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ err: true, msg: error.message });
+  }
+};
+
+export const acceptFriendRequest = async (req, res) => {
+  const { loggedInUserId, targetUserId } = req.body;
+
+  try {
+    // Find the logged-in user and update the friendRequest and friends fields
+    const updatedUser = await Users.findOneAndUpdate(
+      { _id: loggedInUserId },
+      {
+        $addToSet: { friends: targetUserId },
+        $pull: { friendRequest: targetUserId },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      err: false,
+      msg: "Friend request accepted successfully",
       data: updatedUser,
     });
   } catch (error) {
